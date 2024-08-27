@@ -1,0 +1,179 @@
+import UIKit
+
+enum Pawn: CaseIterable {
+    case dog, car, ketchupBottle, iron, shoe, hat
+}
+
+struct Player {
+    let name: String
+    let pawn: Pawn
+}
+
+extension Player {
+    init(name: String) {
+        self.name = name
+        self.pawn = Pawn.allCases.randomElement()!
+    }
+}
+// Почленный инициализатор
+let player = Player(name: "SuperJeff", pawn: .shoe)
+let anotherPlayer = Player(name: "Mary", pawn: .dog)
+
+// MARK: - Homework 5.1.3
+
+struct Pancakes {
+
+    enum SyrupType: CaseIterable {
+        case corn
+        case molasses
+        case maple
+    }
+
+    let syrupType: SyrupType
+    let stackSize: Int
+}
+
+extension Pancakes {
+    init(syrupType: SyrupType) {
+        self.syrupType = syrupType
+        self.stackSize = Int.random(in: 10...100)
+    }
+}
+
+let pancakes = Pancakes(syrupType: .corn, stackSize: 8)
+let morePancakes = Pancakes(syrupType: .maple)
+
+// 5.2 Инициализаторы и подклассы
+
+class BoardGame {
+    // Свойства
+    let players: [Player]
+    let numberOfTiles: Int
+
+    // Назначенный инициализатор
+    init(players: [Player], numberOfTiles: Int) {
+        self.players = players
+        self.numberOfTiles = numberOfTiles
+    }
+
+    // Вспомогательный инициализатор принимает игроков
+    convenience init(players: [Player]) {
+        self.init(players: players, numberOfTiles: 32)
+    }
+
+    // Вспомогательный инициализатор преобразует строки в игроков
+    convenience init(names: [String]) {
+        var players = [Player]()
+        for name in names {
+            players.append(Player(name: name))
+        }
+        self.init(players: players, numberOfTiles: 32)
+    }
+}
+
+// Способы инициализации суперкласса BoardGame:
+
+let boardGame = BoardGame(names: ["Melissa", "SuperJeff", "Dave"])
+
+let players = [
+    Player(name: "Melissa"),
+    Player(name: "SuperJeff"),
+    Player(name: "Dave")
+]
+
+let boardGame2 = BoardGame(players: players)
+
+let boardGame3 = BoardGame(players: players, numberOfTiles: 32)
+
+// MARK: - 5.2.3 Создание подкласса
+
+class MutabilityLand: BoardGame {
+    // ScoreBoard инициализируется с пустым словарем
+    var scoreBoard = [String: Int]()
+    var winner: Player?
+
+    // Новое свойство instructions
+    let instructions: String
+
+    init(players: [Player], instructions: String, numberOfTiles: Int) {
+        self.instructions = instructions
+        super.init(players: players, numberOfTiles: numberOfTiles)
+    }
+
+    // Новый назначенный инициализатор для инстанциирования инструкций
+    override init(players: [Player], numberOfTiles: Int) {
+        self.instructions = "Read the manual"
+        // Основной инициализатор вызывает инициализатор настольной игры
+        super.init(players: players, numberOfTiles: numberOfTiles)
+    }
+}
+
+// Они больше не работают
+//let mutabilityLand = MutabilityLand(names: ["Melissa", "SuperJeff", "Dave"])
+//let mutabilityLand = MutabilityLand(players: players)
+//let mutabilityLand = MutabilityLand(players: players, numberOfTiles: 32)
+
+// MARK: - 5.2.5. Возвращение инициализаторов суперкласса
+
+// Все доступные инициализаторы для MutabilityLand
+let mutabilityLand = MutabilityLand(players: players, instructions: "Just red the manual", numberOfTiles: 40)
+let mutabilityLand2 = MutabilityLand(players: players)
+let mutabilityLand3 = MutabilityLand(players: players, numberOfTiles: 32)
+
+// MARK: - Homework 5.2.6
+let firstTelevision = Television(room: "Lobby")
+let secondTelevision = Television(serialNumber: "abc")
+
+class Device {
+    var serialNumber: String
+    var room: String
+
+    init(serialNumber: String, room: String) {
+        self.serialNumber = serialNumber
+        self.room = room
+    }
+
+    convenience init() {
+        self.init(serialNumber: "Unknown", room: "Unknown")
+    }
+
+    convenience init(serialNumber: String) {
+        self.init(serialNumber: serialNumber, room: "Unknown")
+    }
+
+    convenience init(room: String) {
+        self.init(serialNumber: "Unknown", room: room)
+    }
+}
+
+class Television: Device {
+    enum ScreenType {
+        case led
+        case oled
+        case lcd
+        case unknown
+    }
+
+    enum Resolution {
+        case ultraHd
+        case fullHd
+        case hd
+        case sd
+        case unknown
+    }
+
+    let resolution: Resolution
+    let screenType: ScreenType
+
+    init(resolution: Resolution, screenType: ScreenType, serialNumber: String, room: String) {
+        self.resolution = resolution
+        self.screenType = screenType
+        super.init(serialNumber: serialNumber, room: room)
+    }
+
+    override init(serialNumber: String, room: String) {
+        self.resolution = .fullHd
+        self.screenType = .lcd
+        super.init(serialNumber: serialNumber, room: room)
+    }
+}
