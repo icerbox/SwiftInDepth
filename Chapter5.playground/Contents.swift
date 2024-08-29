@@ -87,26 +87,26 @@ let boardGame3 = BoardGame(players: players, numberOfTiles: 32)
 
 // MARK: - 5.2.3 Создание подкласса
 
-class MutabilityLand: BoardGame {
-    // ScoreBoard инициализируется с пустым словарем
-    var scoreBoard = [String: Int]()
-    var winner: Player?
-
-    // Новое свойство instructions
-    let instructions: String
-
-    init(players: [Player], instructions: String, numberOfTiles: Int) {
-        self.instructions = instructions
-        super.init(players: players, numberOfTiles: numberOfTiles)
-    }
-
-    // Новый назначенный инициализатор для инстанциирования инструкций
-    override init(players: [Player], numberOfTiles: Int) {
-        self.instructions = "Read the manual"
-        // Основной инициализатор вызывает инициализатор настольной игры
-        super.init(players: players, numberOfTiles: numberOfTiles)
-    }
-}
+//class MutabilityLand: BoardGame {
+//    // ScoreBoard инициализируется с пустым словарем
+//    var scoreBoard = [String: Int]()
+//    var winner: Player?
+//
+//    // Новое свойство instructions
+//    let instructions: String
+//
+//    init(players: [Player], instructions: String, numberOfTiles: Int) {
+//        self.instructions = instructions
+//        super.init(players: players, numberOfTiles: numberOfTiles)
+//    }
+//
+//    // Новый назначенный инициализатор для инстанциирования инструкций
+//    override init(players: [Player], numberOfTiles: Int) {
+//        self.instructions = "Read the manual"
+//        // Основной инициализатор вызывает инициализатор настольной игры
+//        super.init(players: players, numberOfTiles: numberOfTiles)
+//    }
+//}
 
 // Они больше не работают
 //let mutabilityLand = MutabilityLand(names: ["Melissa", "SuperJeff", "Dave"])
@@ -116,9 +116,9 @@ class MutabilityLand: BoardGame {
 // MARK: - 5.2.5. Возвращение инициализаторов суперкласса
 
 // Все доступные инициализаторы для MutabilityLand
-let mutabilityLand = MutabilityLand(players: players, instructions: "Just red the manual", numberOfTiles: 40)
-let mutabilityLand2 = MutabilityLand(players: players)
-let mutabilityLand3 = MutabilityLand(players: players, numberOfTiles: 32)
+//let mutabilityLand = MutabilityLand(players: players, instructions: "Just red the manual", numberOfTiles: 40)
+//let mutabilityLand2 = MutabilityLand(players: players)
+//let mutabilityLand3 = MutabilityLand(players: players, numberOfTiles: 32)
 
 // MARK: - Homework 5.2.6
 let firstTelevision = Television(room: "Lobby")
@@ -146,6 +146,87 @@ class Device {
     }
 }
 
+//class Television: Device {
+//    enum ScreenType {
+//        case led
+//        case oled
+//        case lcd
+//        case unknown
+//    }
+//
+//    enum Resolution {
+//        case ultraHd
+//        case fullHd
+//        case hd
+//        case sd
+//        case unknown
+//    }
+//
+//    let resolution: Resolution
+//    let screenType: ScreenType
+//
+//    init(resolution: Resolution, screenType: ScreenType, serialNumber: String, room: String) {
+//        self.resolution = resolution
+//        self.screenType = screenType
+//        super.init(serialNumber: serialNumber, room: room)
+//    }
+//
+//    override init(serialNumber: String, room: String) {
+//        self.resolution = .fullHd
+//        self.screenType = .lcd
+//        super.init(serialNumber: serialNumber, room: room)
+//    }
+//}
+
+// MARK: - 5.3.1. Реализация назначенного инициализатора в качестве вспомогательного с использованием ключевого слова override
+
+class MutabilityLand: BoardGame {
+    // ScoreBoard инициализируется с пустым словарем
+    var scoreBoard = [String: Int]()
+    var winner: Player?
+
+    // Новое свойство instructions
+    let instructions: String
+
+    // Теперь это переопределяющий вспомогательный инициализатор
+    convenience override init(players: [Player], numberOfTiles: Int) {
+        // Инициализатор теперь указывает в сторону (self.init), а не вверх (super.init)
+        self.init(players: players, instructions: "Read the manual", numberOfTiles: numberOfTiles)
+    }
+
+    // Оставляем назначенный инициализатор как есть
+    init(players: [Player], instructions: String, numberOfTiles: Int) {
+        self.instructions = "Read the manual"
+        // Основной инициализатор вызывает инициализатор настольной игры
+        super.init(players: players, numberOfTiles: numberOfTiles)
+    }
+}
+
+class MutabilityLandJunior: MutabilityLand {
+    let soundsEnabled: Bool
+
+    // MutabilityLandJunior получает собственный назначенный инициализатор
+    init(soundsEnabled: Bool, players: [Player], instructions: String, numberOfTiles: Int) {
+        self.soundsEnabled = soundsEnabled
+        super.init(players: players, instructions: instructions, numberOfTiles: numberOfTiles)
+    }
+
+    // Добавлен единственный переопределяющий инициализатор
+    convenience override init(players: [Player], instructions: String, numberOfTiles: Int) {
+        self.init(soundsEnabled: false, players: players, instructions: instructions, numberOfTiles: numberOfTiles)
+    }
+}
+
+// Теперь можно инициализировать эту игру пятью способами:
+let mutabilityLandJr = MutabilityLandJunior(players: players, instructions: "Kids don't read manuals", numberOfTiles: 8)
+let mutabilityLandJr2 = MutabilityLandJunior(soundsEnabled: true, players: players, instructions: "Kids don't read manuals", numberOfTiles: 8)
+let mutabilityLandJr3 = MutabilityLand(names: ["Philippe", "Alex"])
+let mutabilityLandJr4 = MutabilityLand(players: players)
+let mutabilityLandJr5 = MutabilityLand(players: players, numberOfTiles: 8)
+
+// MARK: - Homework 5.3.3
+// Имеется класс, который делит подклассы Television из предыдущего упражнения.
+
 class Television: Device {
     enum ScreenType {
         case led
@@ -165,15 +246,31 @@ class Television: Device {
     let resolution: Resolution
     let screenType: ScreenType
 
-    init(resolution: Resolution, screenType: ScreenType, serialNumber: String, room: String) {
-        self.resolution = resolution
-        self.screenType = screenType
-        super.init(serialNumber: serialNumber, room: room)
+    convenience override init(serialNumber: String, room: String) {
+        self.init(serialNumber: serialNumber, room: room, resolution: .ultraHd, screenType: .lcd)
+
     }
 
-    override init(serialNumber: String, room: String) {
+    init(serialNumber: String, room: String, resolution: Resolution, screenType: ScreenType) {
         self.resolution = .fullHd
         self.screenType = .lcd
         super.init(serialNumber: serialNumber, room: room)
     }
 }
+
+class HandHeldTelevision: Television {
+    let weight: Int
+
+    init(weight: Int, resolution: Resolution, screenType: ScreenType, serialNumber: String, room: String) {
+        self.weight = weight
+        super.init(serialNumber: serialNumber, room: room, resolution: resolution, screenType: screenType)
+    }
+
+    convenience override init(serialNumber: String, room: String, resolution: Television.Resolution, screenType: Television.ScreenType) {
+        self.init(weight: 90, resolution: .fullHd, screenType: .lcd, serialNumber: serialNumber, room: room)
+    }
+
+}
+
+// Добавьте два вспомогательных инициализатора в иерархию подклассов, чтобы инициализатор работал из самого верхнего суперкласса
+let handHeldTelevision = HandHeldTelevision(serialNumber: "293nr30znNdjW")
