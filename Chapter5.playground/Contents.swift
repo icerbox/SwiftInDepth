@@ -45,31 +45,31 @@ let morePancakes = Pancakes(syrupType: .maple)
 
 // 5.2 Инициализаторы и подклассы
 
-class BoardGame {
-    // Свойства
-    let players: [Player]
-    let numberOfTiles: Int
-
-    // Назначенный инициализатор
-    init(players: [Player], numberOfTiles: Int) {
-        self.players = players
-        self.numberOfTiles = numberOfTiles
-    }
-
-    // Вспомогательный инициализатор принимает игроков
-    convenience init(players: [Player]) {
-        self.init(players: players, numberOfTiles: 32)
-    }
-
-    // Вспомогательный инициализатор преобразует строки в игроков
-    convenience init(names: [String]) {
-        var players = [Player]()
-        for name in names {
-            players.append(Player(name: name))
-        }
-        self.init(players: players, numberOfTiles: 32)
-    }
-}
+//class BoardGame {
+//    // Свойства
+//    let players: [Player]
+//    let numberOfTiles: Int
+//
+//    // Назначенный инициализатор
+//    init(players: [Player], numberOfTiles: Int) {
+//        self.players = players
+//        self.numberOfTiles = numberOfTiles
+//    }
+//
+//    // Вспомогательный инициализатор принимает игроков
+//    convenience init(players: [Player]) {
+//        self.init(players: players, numberOfTiles: 32)
+//    }
+//
+//    // Вспомогательный инициализатор преобразует строки в игроков
+//    convenience init(names: [String]) {
+//        var players = [Player]()
+//        for name in names {
+//            players.append(Player(name: name))
+//        }
+//        self.init(players: players, numberOfTiles: 32)
+//    }
+//}
 
 // Способы инициализации суперкласса BoardGame:
 
@@ -189,7 +189,7 @@ class MutabilityLand: BoardGame {
     let instructions: String
 
     // Теперь это переопределяющий вспомогательный инициализатор
-    convenience override init(players: [Player], numberOfTiles: Int) {
+    convenience required init(players: [Player], numberOfTiles: Int) {
         // Инициализатор теперь указывает в сторону (self.init), а не вверх (super.init)
         self.init(players: players, instructions: "Read the manual", numberOfTiles: numberOfTiles)
     }
@@ -274,3 +274,90 @@ class HandHeldTelevision: Television {
 
 // Добавьте два вспомогательных инициализатора в иерархию подклассов, чтобы инициализатор работал из самого верхнего суперкласса
 let handHeldTelevision = HandHeldTelevision(serialNumber: "293nr30znNdjW")
+
+// MARK: - 5.4. Требуемые инициализаторы
+
+// 5.4.1. Фабричные методы
+
+//class BoardGame {
+//    // Свойства
+//    let players: [Player]
+//    let numberOfTiles: Int
+//
+//    // Назначенный инициализатор
+//    required init(players: [Player], numberOfTiles: Int) {
+//        self.players = players
+//        self.numberOfTiles = numberOfTiles
+//    }
+//
+//    // Вспомогательный инициализатор принимает игроков
+//    convenience init(players: [Player]) {
+//        self.init(players: players, numberOfTiles: 32)
+//    }
+//
+//    // Вспомогательный инициализатор преобразует строки в игроков
+//    convenience init(names: [String]) {
+//        var players = [Player]()
+//        for name in names {
+//            players.append(Player(name: name))
+//        }
+//        self.init(players: players, numberOfTiles: 32)
+//    }
+//
+//    class func makeGame(players: [Player]) -> Self {
+//        let boardGame = self.init(players: players, numberOfTiles: 32)
+//        // Здесь идет конфигурация
+//        // E.g.
+//        // boardGame.locale = Locale.current
+//        // boardGame.timeLimit = 900
+//        return boardGame
+//    }
+//}
+
+// 5.4.2. Протоколы
+
+protocol BoardGameType {
+    init(players: [Player], numberOfTiles: Int)
+}
+
+// Теперь это финальный класс
+class BoardGame: BoardGameType {
+    // Свойства
+    let players: [Player]
+    let numberOfTiles: Int
+
+    // Использование ключевого слова required не требуется
+    required init(players: [Player], numberOfTiles: Int) {
+        self.players = players
+        self.numberOfTiles = numberOfTiles
+    }
+
+    // Вспомогательный инициализатор принимает игроков
+    convenience init(players: [Player]) {
+        self.init(players: players, numberOfTiles: 32)
+    }
+
+    // Вспомогательный инициализатор преобразует строки в игроков
+    convenience init(names: [String]) {
+        var players = [Player]()
+        for name in names {
+            players.append(Player(name: name))
+        }
+        self.init(players: players, numberOfTiles: 32)
+    }
+
+    class func makeGame(players: [Player]) -> Self {
+        let boardGame = self.init(players: players, numberOfTiles: 32)
+        // Здесь идет конфигурация
+        // E.g.
+        // boardGame.locale = Locale.current
+        // boardGame.timeLimit = 900
+        return boardGame
+    }
+}
+
+struct Point {
+    var x: Double
+    var y: Double
+}
+
